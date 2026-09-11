@@ -1,15 +1,32 @@
-import nest_asyncio
-nest_asyncio.apply()
 import os
 import logging
+from flask import Flask
+from threading import Thread
 from telegram import Update, LabeledPrice, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, CallbackQueryHandler, PreCheckoutQueryHandler, MessageHandler, filters
+import nest_asyncio
+
+nest_asyncio.apply()
 
 # Logging setup
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 BOT_TOKEN = "8938226896:AAE6VV3zj01TBicAloOdifyjEl405M7kB-g"
-PRICE_STARS = 850  # Roughly $17 equivalent in Telegram Stars
+PRICE_STARS = 850
+
+# Simple Flask app for UptimeRobot to ping
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is active and running 24/7!"
+
+def run_flask():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    t = Thread(target=run_flask)
+    t.start()
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     welcome_text = (
@@ -31,7 +48,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         title = "Shopify ChatGPT Prompt Vault"
         description = "Instant download: 110+ high-converting prompts for Shopify store owners (PDF)."
         payload = "shopify_prompt_payload"
-        currency = "XTR"  # Telegram Stars currency
+        currency = "XTR"
         prices = [LabeledPrice("Prompt Vault PDF", PRICE_STARS)]
         
         await context.bot.send_invoice(
@@ -39,7 +56,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             title=title,
             description=description,
             payload=payload,
-            provider_token="",  # Must be empty for Telegram Stars (XTR)
+            provider_token="",
             currency=currency,
             prices=prices
         )
@@ -55,11 +72,11 @@ async def successful_payment_callback(update: Update, context: ContextTypes.DEFA
         "Here is your *The Ultimate E-commerce ChatGPT Prompt Vault* PDF guide.",
         parse_mode="Markdown"
     )
-    # Here you can send the document directly if uploaded, or a direct link/file
-    # u = update.message.chat_id
-    # await context.bot.send_document(chat_id=u, document=open("path_to_pdf.pdf", "rb"))
 
 def main():
+    # Start the Flask server in the background for UptimeRobot
+    keep_alive()
+
     application = ApplicationBuilder().token(BOT_TOKEN).build()
 
     application.add_handler(CommandHandler("start", start))
