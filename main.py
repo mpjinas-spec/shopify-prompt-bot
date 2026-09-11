@@ -13,6 +13,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 BOT_TOKEN = "8938226896:AAE6VV3zj01TBicAloOdifyjEl405M7kB-g"
 PRICE_STARS = 850
+PDF_FILENAME = "The Ultimate E-commerce ChatGPT Prompt Vault for Shopify Owners.pdf"
 
 # Simple Flask app for UptimeRobot to ping
 app = Flask('')
@@ -67,14 +68,26 @@ async def precheckout_callback(update: Update, context: ContextTypes.DEFAULT_TYP
         await query.answer(ok=True)
 
 async def successful_payment_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.message.chat_id
     await update.message.reply_text(
         "🎉 Payment Successful! Thank you for your purchase.\n\n"
-        "Here is your *The Ultimate E-commerce ChatGPT Prompt Vault* PDF guide.",
+        "Here is your *The Ultimate E-commerce ChatGPT Prompt Vault* PDF guide. Enjoy scaling your Shopify store! 🚀",
         parse_mode="Markdown"
     )
+    
+    # Send the PDF file automatically
+    try:
+        with open(PDF_FILENAME, 'rb') as pdf_file:
+            await context.bot.send_document(
+                chat_id=chat_id,
+                document=pdf_file,
+                caption="📄 The Ultimate E-commerce ChatGPT Prompt Vault"
+            )
+    except Exception as e:
+        logging.error(f"Failed to send PDF: {e}")
+        await update.message.reply_text("⚠️ Error sending the file. Please contact support.")
 
 def main():
-    # Start the Flask server in the background for UptimeRobot
     keep_alive()
 
     application = ApplicationBuilder().token(BOT_TOKEN).build()
