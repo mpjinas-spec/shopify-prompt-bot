@@ -13,14 +13,14 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 BOT_TOKEN = "8938226896:AAE6VV3zj01TBicAloOdifyjEl405M7kB-g"
 
-# മുഴുവൻ പ്രൊഡക്റ്റുകളുടെയും വിവരങ്ങളും കൃത്യമായ കവർ ഫയലുകളും
+# മുഴുവൻ പ്രൊഡക്റ്റുകളുടെയും വിവരങ്ങളും കവർ ഫയൽ നാമങ്ങളും
 PRODUCTS = {
     "project_0": {
         "title": "🎁 The Ultimate E-commerce ChatGPT Prompt Vault (Free Samples)",
         "description": "110+ proven prompts for Shopify store owners (Free Samples).",
         "price": 0,
         "is_free": True,
-        "cover": "cover.jpg"
+        "cover": "cover.jpg"  # ഫ്രീ സാമ്പിളിന് നിലവിലുള്ള കവർ
     },
     "ai_prompt_vault": {
         "title": "🔥 Ecommerce AI Prompt Vault",
@@ -28,7 +28,7 @@ PRODUCTS = {
         "price": 850,
         "is_free": False,
         "file_path": "The Ultimate E-commerce ChatGPT Prompt Vault for Shopify Owners.pdf",
-        "cover": "Ecommerce AI Prompt Vault.jpg"
+        "cover": "Ecommerce AI Prompt Vault.jpg"  # ഗിറ്റ്‌ഹബ്ബിലുള്ള കൃത്യമായ പേര്
     },
     "notion_system": {
         "title": "📊 Notion Business System",
@@ -36,7 +36,7 @@ PRODUCTS = {
         "price": 600,
         "is_free": False,
         "file_path": "notion-links.txt",
-        "cover": "Notion System.jpg"
+        "cover": "Notion System.jpg"  # ഗിറ്റ്‌ഹബ്ബിലുള്ള കൃത്യമായ പേര്
     },
     "shopify_playbook": {
         "title": "🚀 Shopify Scale Playbook",
@@ -44,7 +44,7 @@ PRODUCTS = {
         "price": 1000,
         "is_free": False,
         "file_path": "Shopify_Scale_Playbook_Final.pdf",
-        "cover": "Shopify Scale Playbook.jpg"
+        "cover": "Shopify Scale Playbook.jpg"  # ഗിറ്റ്‌ഹബ്ബിലുള്ള കൃത്യമായ പേര്
     }
 }
 
@@ -62,11 +62,11 @@ def keep_alive():
     t = Thread(target=run_flask)
     t.start()
 
-# മെയിൻ മെനു കീബോർഡ് (5 ഓപ്ഷനുകൾ)
+# മെയിൻ മെനു കീബോർഡ് (5 ഓപ്ഷനുകൾ - Project 0 എന്ന വാക്ക് ഒഴിവാക്കിയിരിക്കുന്നു)
 def get_main_menu_keyboard():
     keyboard = [
         [InlineKeyboardButton("🎁 Free AI Prompts", callback_data="select_free_entry")],
-        [InlineKeyboardButton("🎁 Project 0: The Ultimate E-commerce ChatGPT Prompt Vault", callback_data="select_project_0")],
+        [InlineKeyboardButton("🎁 The Ultimate E-commerce ChatGPT Prompt Vault", callback_data="select_project_0")],
         [InlineKeyboardButton(f"⭐ {PRODUCTS['ai_prompt_vault']['title']} - {PRODUCTS['ai_prompt_vault']['price']} Stars", callback_data="select_ai_prompt_vault")],
         [InlineKeyboardButton(f"⭐ {PRODUCTS['notion_system']['title']} - {PRODUCTS['notion_system']['price']} Stars", callback_data="select_notion_system")],
         [InlineKeyboardButton(f"⭐ {PRODUCTS['shopify_playbook']['title']} - {PRODUCTS['shopify_playbook']['price']} Stars", callback_data="select_shopify_playbook")]
@@ -90,7 +90,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = query.message.chat_id
 
     if data == "select_free_entry" or data == "select_project_0":
-        # കവർ ഫോട്ടോ കൃത്യമായി സെൻഡ് ചെയ്യാൻ (Absolute Path നോക്കുന്നു)
+        # കവർ ഫോട്ടോ അയക്കുന്നു
         cover_file = PRODUCTS["project_0"]["cover"]
         if os.path.exists(cover_file):
             try:
@@ -117,7 +117,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         free_keyboard = [
             [InlineKeyboardButton(f"⭐ Unlock Full Prompt Vault - {PRODUCTS['ai_prompt_vault']['price']} Stars", callback_data="select_ai_prompt_vault")],
             [InlineKeyboardButton("🎁 Free AI Prompts", callback_data="select_free_entry")],
-            [InlineKeyboardButton("🎁 Project 0: The Ultimate E-commerce ChatGPT Prompt Vault", callback_data="select_project_0")],
+            [InlineKeyboardButton("🎁 The Ultimate E-commerce ChatGPT Prompt Vault", callback_data="select_project_0")],
             [InlineKeyboardButton(f"⭐ {PRODUCTS['ai_prompt_vault']['title']} - {PRODUCTS['ai_prompt_vault']['price']} Stars", callback_data="select_ai_prompt_vault")],
             [InlineKeyboardButton(f"⭐ {PRODUCTS['notion_system']['title']} - {PRODUCTS['notion_system']['price']} Stars", callback_data="select_notion_system")],
             [InlineKeyboardButton(f"⭐ {PRODUCTS['shopify_playbook']['title']} - {PRODUCTS['shopify_playbook']['price']} Stars", callback_data="select_shopify_playbook")]
@@ -132,7 +132,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not prod:
             return
 
-        # കവർ ഫോട്ടോ സെൻഡ് ചെയ്യുന്നു
+        # പെയ്ഡ് പ്രൊഡക്റ്റുകളുടെ കവർ ഫോട്ടോ അയക്കുന്നു (ഫയൽ ഉണ്ടോയെന്ന് ചെക്ക് ചെയ്യുന്നു)
         cover_file = prod.get('cover')
         if cover_file and os.path.exists(cover_file):
             try:
@@ -143,7 +143,9 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                         caption=f"📦 **{prod['title']}**\nPreview Cover"
                     )
             except Exception as e:
-                logging.error(f"Failed to send cover image: {e}")
+                logging.error(f"Failed to send cover image {cover_file}: {e}")
+        else:
+            logging.warning(f"Cover image not found on server: {cover_file}")
 
         prices = [LabeledPrice(prod['title'], prod['price'])]
         await context.bot.send_invoice(
