@@ -13,38 +13,38 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 BOT_TOKEN = "8938226896:AAE6VV3zj01TBicAloOdifyjEl405M7kB-g"
 
-# മുഴുവൻ പ്രൊഡക്റ്റുകളുടെയും വിവരങ്ങളും കവർ ഫയൽ നാമങ്ങളും
+# ഗിറ്റ്‌ഹബ്ബിലെ കൃത്യമായ ഫയൽ നാമങ്ങൾ അനുസരിച്ചുള്ള പ്രൊഡക്റ്റ് ലിസ്റ്റ്
 PRODUCTS = {
     "project_0": {
         "title": "🎁 The Ultimate E-commerce ChatGPT Prompt Vault (Free Samples)",
         "description": "110+ proven prompts for Shopify store owners (Free Samples).",
         "price": 0,
         "is_free": True,
-        "cover": "cover.jpg"  # ഫ്രീ സാമ്പിളിന് നിലവിലുള്ള കവർ
+        "cover": "cover.jpg"
     },
     "ai_prompt_vault": {
         "title": "🔥 Ecommerce AI Prompt Vault",
         "description": "110+ high-converting prompts for Shopify store owners (PDF).",
         "price": 850,
         "is_free": False,
-        "file_path": "The Ultimate E-commerce ChatGPT Prompt Vault for Shopify Owners.pdf",
-        "cover": "Ecommerce AI Prompt Vault.jpg"  # ഗിറ്റ്‌ഹബ്ബിലുള്ള കൃത്യമായ പേര്
+        "file_path": "ecommerce-ai-prompt-vault.pdf",  # സ്ക്രീൻഷോട്ടിലെ കൃത്യമായ പേര്
+        "cover": "Ecommerce AI Prompt Vault.jpg"
     },
     "notion_system": {
         "title": "📊 Notion Business System",
         "description": "Centralized Notion workspace templates and operational dashboards.",
         "price": 600,
         "is_free": False,
-        "file_path": "notion-links.txt",
-        "cover": "Notion System.jpg"  # ഗിറ്റ്‌ഹബ്ബിലുള്ള കൃത്യമായ പേര്
+        "file_path": "notion-links.txt",  # സ്ക്രീൻഷോട്ടിലെ കൃത്യമായ പേര്
+        "cover": "Notion System.jpg"
     },
     "shopify_playbook": {
         "title": "🚀 Shopify Scale Playbook",
         "description": "Complete 5-Module E-Commerce Growth System.",
         "price": 1000,
         "is_free": False,
-        "file_path": "Shopify_Scale_Playbook_Final.pdf",
-        "cover": "Shopify Scale Playbook.jpg"  # ഗിറ്റ്‌ഹബ്ബിലുള്ള കൃത്യമായ പേര്
+        "file_path": "THE SHOPIFY SCALE PLAYBOOK.pdf",  # സ്ക്രീൻഷോട്ടിലെ കൃത്യമായ പേര്
+        "cover": "Shopify Scale Playbook.jpg"
     }
 }
 
@@ -62,7 +62,7 @@ def keep_alive():
     t = Thread(target=run_flask)
     t.start()
 
-# മെയിൻ മെനു കീബോർഡ് (5 ഓപ്ഷനുകൾ - Project 0 എന്ന വാക്ക് ഒഴിവാക്കിയിരിക്കുന്നു)
+# മെയിൻ മെനു കീബോർഡ് (5 ഓപ്ഷനുകൾ)
 def get_main_menu_keyboard():
     keyboard = [
         [InlineKeyboardButton("🎁 Free AI Prompts", callback_data="select_free_entry")],
@@ -90,7 +90,6 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = query.message.chat_id
 
     if data == "select_free_entry" or data == "select_project_0":
-        # കവർ ഫോട്ടോ അയക്കുന്നു
         cover_file = PRODUCTS["project_0"]["cover"]
         if os.path.exists(cover_file):
             try:
@@ -113,7 +112,6 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "💡 *Want to unlock all 110+ proven prompts? Get the full vault below!* 🔥"
         )
         
-        # ഫ്രീ പ്രൊംപ്റ്റിനകത്ത് ഫുൾ വാൾട്ട് വാങ്ങാനുള്ള ബട്ടണും മെയിൻ മെനുവും വെക്കുന്നു
         free_keyboard = [
             [InlineKeyboardButton(f"⭐ Unlock Full Prompt Vault - {PRODUCTS['ai_prompt_vault']['price']} Stars", callback_data="select_ai_prompt_vault")],
             [InlineKeyboardButton("🎁 Free AI Prompts", callback_data="select_free_entry")],
@@ -132,7 +130,6 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not prod:
             return
 
-        # പെയ്ഡ് പ്രൊഡക്റ്റുകളുടെ കവർ ഫോട്ടോ അയക്കുന്നു (ഫയൽ ഉണ്ടോയെന്ന് ചെക്ക് ചെയ്യുന്നു)
         cover_file = prod.get('cover')
         if cover_file and os.path.exists(cover_file):
             try:
