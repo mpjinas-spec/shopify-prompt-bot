@@ -13,10 +13,10 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 BOT_TOKEN = "8938226896:AAE6VV3zj01TBicAloOdifyjEl405M7kB-g"
 
-# പ്രൊഡക്റ്റുകളുടെ വിവരങ്ങളും നിങ്ങൾ നൽകിയ കൃത്യമായ കവർ ഫയൽ നാമങ്ങളും
+# മൂന്ന് പ്രൊഡക്റ്റുകളുടെയും കൃത്യമായ വിവരങ്ങളും ഫയലുകളും
 PRODUCTS = {
     "ai_prompt_vault": {
-        "title": "🔥 Ecommerce AI Prompt Vault",
+        "title": "🔥 The Ultimate E-commerce ChatGPT Prompt Vault",
         "description": "110+ high-converting prompts for Shopify store owners (PDF).",
         "price": 850,
         "file_path": "The Ultimate E-commerce ChatGPT Prompt Vault for Shopify Owners.pdf",
@@ -57,15 +57,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     welcome_text = (
         f"👋 Hello {user_name}!\n\n"
         "Welcome to **Qyro Scale Hub** 🚀\n"
-        "Please choose a digital product below to get started:"
+        "Please choose a digital product or free option below:"
     )
     
     keyboard = []
+    # മൂന്ന് പ്രൊഡക്റ്റുകൾക്കുള്ള ബട്ടണുകൾ
     for key, product in PRODUCTS.items():
         keyboard.append([InlineKeyboardButton(f"⭐ {product['title']} - {product['price']} Stars", callback_data=f"buy_{key}")])
     
-    # ഫ്രീ പ്രൊംപ്റ്റ്‌സ് ഓപ്ഷൻ
-    keyboard.append([InlineKeyboardButton("🎁 Get Free AI Prompts", callback_data="free_prompts")])
+    # ഫ്രീ പ്രൊംപ്റ്റിനുള്ള ബട്ടൺ താഴെ ചേർക്കുന്നു
+    keyboard.append([InlineKeyboardButton("🎁 Get Free AI Prompts (Sample)", callback_data="free_prompts")])
     
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text(welcome_text, reply_markup=reply_markup, parse_mode="Markdown")
@@ -80,7 +81,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await context.bot.send_photo(
                     chat_id=query.message.chat_id,
                     photo=photo_file,
-                    caption="📄 **Ecommerce AI Prompt Vault**\n(Preview of what you get inside)"
+                    caption="📄 **The Ultimate E-commerce ChatGPT Prompt Vault**\n(Preview of what you get inside)"
                 )
         except Exception as e:
             logging.error(f"Failed to send cover image: {e}")
