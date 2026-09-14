@@ -13,26 +13,28 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 BOT_TOKEN = "8938226896:AAE6VV3zj01TBicAloOdifyjEl405M7kB-g"
 
-# പ്രൊഡക്റ്റ് വിവരങ്ങളും ഫയലുകളും വിലകളും (Telegram Stars)
+# പ്രൊഡക്റ്റുകളുടെ വിവരങ്ങളും നിങ്ങൾ നൽകിയ കൃത്യമായ കവർ ഫയൽ നാമങ്ങളും
 PRODUCTS = {
-    "prompt_vault": {
-        "title": "Ecommerce AI Prompt Vault",
+    "ai_prompt_vault": {
+        "title": "🔥 Ecommerce AI Prompt Vault",
         "description": "110+ high-converting prompts for Shopify store owners (PDF).",
         "price": 850,
         "file_path": "The Ultimate E-commerce ChatGPT Prompt Vault for Shopify Owners.pdf",
-        "cover": "cover.jpg"
+        "cover": "Ecommerce AI Prompt Vault.jpg"
     },
     "notion_system": {
-        "title": "Notion System & Dashboards",
+        "title": "📊 Notion Business System",
         "description": "Centralized Notion workspace templates and operational dashboards.",
         "price": 600,
-        "file_path": "notion-links.txt"
+        "file_path": "notion-links.txt",
+        "cover": "Notion System.jpg"
     },
     "shopify_playbook": {
-        "title": "Shopify Scale Playbook",
+        "title": "🚀 Shopify Scale Playbook",
         "description": "Complete 5-Module E-Commerce Growth System.",
         "price": 1000,
-        "file_path": "Shopify_Scale_Playbook_Final.pdf"
+        "file_path": "Shopify_Scale_Playbook_Final.pdf",
+        "cover": "Shopify Scale Playbook.jpg"
     }
 }
 
@@ -55,14 +57,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     welcome_text = (
         f"👋 Hello {user_name}!\n\n"
         "Welcome to **Qyro Scale Hub** 🚀\n"
-        "Choose a digital product or category below to get started:"
+        "Please choose a digital product below to get started:"
     )
     
     keyboard = []
     for key, product in PRODUCTS.items():
         keyboard.append([InlineKeyboardButton(f"⭐ {product['title']} - {product['price']} Stars", callback_data=f"buy_{key}")])
     
-    # ഫ്രീ പ്രൊംപ്റ്റ്‌സ് ഓപ്ഷൻ നിലനിർത്തിയിരിക്കുന്നു
+    # ഫ്രീ പ്രൊംപ്റ്റ്‌സ് ഓപ്ഷൻ
     keyboard.append([InlineKeyboardButton("🎁 Get Free AI Prompts", callback_data="free_prompts")])
     
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -74,11 +76,11 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if query.data == "free_prompts":
         try:
-            with open("cover.jpg", 'rb') as photo_file:
+            with open(PRODUCTS["ai_prompt_vault"]["cover"], 'rb') as photo_file:
                 await context.bot.send_photo(
                     chat_id=query.message.chat_id,
                     photo=photo_file,
-                    caption="📄 **The Ultimate E-commerce ChatGPT Prompt Vault**\n(Preview of what you get inside)"
+                    caption="📄 **Ecommerce AI Prompt Vault**\n(Preview of what you get inside)"
                 )
         except Exception as e:
             logging.error(f"Failed to send cover image: {e}")
@@ -91,7 +93,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "`Generate 5 viral hook lines for a Shopify store selling [Product Niche] that stops users from scrolling instantly.`\n\n"
             "💡 *Try these out and see how much time they save you!* 🔥"
         )
-        keyboard = [[InlineKeyboardButton("⭐ Unlock Full Pro Vault (850 Stars)", callback_data="buy_prompt_vault")]]
+        keyboard = [[InlineKeyboardButton("⭐ Unlock Full Prompt Vault (850 Stars)", callback_data="buy_ai_prompt_vault")]]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.reply_text(free_text, reply_markup=reply_markup, parse_mode="Markdown")
 
