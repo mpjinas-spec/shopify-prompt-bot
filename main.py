@@ -13,26 +13,36 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 BOT_TOKEN = "8938226896:AAE6VV3zj01TBicAloOdifyjEl405M7kB-g"
 
-# മുഴുവൻ പ്രൊഡക്റ്റുകളുടെയും വിവരങ്ങൾ (ഫ്രീ പ്രൊജക്റ്റും പെയ്ഡ് പ്രൊഡക്റ്റുകളും)
-PRODUCTS = {
-    "ai_prompt_vault": {
-        "title": "🔥 The Ultimate E-commerce ChatGPT Prompt Vault",
+# കൃത്യമായ പ്രൊജക്റ്റുകളും അവയുടെ കവർ ഫയൽ നാമങ്ങളും
+PROJECTS = {
+    "project_0": {
+        "title": "🎁 Project 0: Free AI Prompts (2 Free Samples)",
+        "description": "Get your free high-converting AI prompts instantly.",
+        "price": 0,
+        "is_free": True,
+        "cover": "cover.jpg"  # പ്രൊജക്റ്റ് സീറോയുടെ ഒറിജിനൽ കവർ പേര്
+    },
+    "project_1": {
+        "title": "🔥 Project 1: Ecommerce AI Prompt Vault",
         "description": "110+ high-converting prompts for Shopify store owners (PDF).",
         "price": 850,
+        "is_free": False,
         "file_path": "The Ultimate E-commerce ChatGPT Prompt Vault for Shopify Owners.pdf",
         "cover": "Ecommerce AI Prompt Vault.jpg"
     },
-    "notion_system": {
-        "title": "📊 Notion Business System",
+    "project_2": {
+        "title": "📊 Project 2: Notion Business System",
         "description": "Centralized Notion workspace templates and operational dashboards.",
         "price": 600,
+        "is_free": False,
         "file_path": "notion-links.txt",
         "cover": "Notion System.jpg"
     },
-    "shopify_playbook": {
-        "title": "🚀 Shopify Scale Playbook",
+    "project_3": {
+        "title": "🚀 Project 3: Shopify Scale Playbook",
         "description": "Complete 5-Module E-Commerce Growth System.",
         "price": 1000,
+        "is_free": False,
         "file_path": "Shopify_Scale_Playbook_Final.pdf",
         "cover": "Shopify Scale Playbook.jpg"
     }
@@ -57,17 +67,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     welcome_text = (
         f"👋 Hello {user_name}!\n\n"
         "Welcome to **Qyro Scale Hub** 🚀\n"
-        "Choose a digital product or get your free AI prompts below:"
+        "Choose a project below (Project 0 to Project 3):"
     )
     
     keyboard = []
     
-    # 1. ആദ്യം തന്നെ ഫ്രീ പ്രൊംപ്റ്റ് ഓപ്ഷൻ മുകളിൽ കൊടുക്കുന്നു (Project 0)
-    keyboard.append([InlineKeyboardButton("🎁 Get Free AI Prompts (2 Free Samples)", callback_data="free_prompts")])
-    
-    # 2. ബാക്കി മൂന്ന് പെയ്ഡ് പ്രൊഡക്റ്റുകൾ താഴെ കൊടുക്കുന്നു
-    for key, product in PRODUCTS.items():
-        keyboard.append([InlineKeyboardButton(f"⭐ {product['title']} - {product['price']} Stars", callback_data=f"buy_{key}")])
+    for key, proj in PROJECTS.items():
+        if proj["is_free"]:
+            btn_text = f"🎁 {proj['title']}"
+        else:
+            btn_text = f"⭐ {proj['title']} - {proj['price']} Stars"
+        
+        keyboard.append([InlineKeyboardButton(btn_text, callback_data=f"select_{key}")])
     
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text(welcome_text, reply_markup=reply_markup, parse_mode="Markdown")
@@ -76,66 +87,65 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     
-    if query.data == "free_prompts":
-        # ഫ്രീ പ്രൊംപ്റ്റിന് ആദ്യത്തെ പ്രൊഡക്റ്റിന്റെ കവർ ഇമേജ് അയക്കുന്നു
-        cover_file = PRODUCTS["ai_prompt_vault"]["cover"]
-        try:
-            if os.path.exists(cover_file):
-                with open(cover_file, 'rb') as photo_file:
-                    await context.bot.send_photo(
-                        chat_id=query.message.chat_id,
-                        photo=photo_file,
-                        caption="📄 **The Ultimate E-commerce ChatGPT Prompt Vault**\n(Preview Cover)"
-                    )
-        except Exception as e:
-            logging.error(f"Failed to send cover image: {e}")
-
-        free_text = (
-            "🎁 **Here are 2 Free High-Converting Shopify AI Prompts:**\n\n"
-            "**1. Product Description Prompt:**\n"
-            "`Act as an expert copywriter. Write a high-converting product description for [Product Name] focusing on benefits, emotional triggers, and bullet points.`\n\n"
-            "**2. Instagram/TikTok Ad Hook Prompt:**\n"
-            "`Generate 5 viral hook lines for a Shopify store selling [Product Niche] that stops users from scrolling instantly.`\n\n"
-            "💡 *Try these out and see how much time they save you!* 🔥\n\n"
-            "To unlock the full 110+ prompts, get the complete vault below 👇"
-        )
-        keyboard = [[InlineKeyboardButton("⭐ Buy Full Vault for 850 Stars", callback_data="buy_ai_prompt_vault")]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.reply_text(free_text, reply_markup=reply_markup, parse_mode="Markdown")
-
-    elif query.data.startswith("buy_"):
-        product_key = query.data.replace("buy_", "")
-        product = PRODUCTS.get(product_key)
+    data = query.data
+    if data.startswith("select_"):
+        proj_key = data.replace("select_", "")
+        proj = PROJECTS.get(proj_key)
         
-        if not product:
+        if not proj:
             return
 
         chat_id = query.message.chat_id
         
-        # വാങ്ങുന്ന പ്രൊഡക്റ്റിന്റെ കവർ ചിത്രം ആദ്യം സെൻഡ് ചെയ്യുന്നു
-        cover_file = product['cover']
-        try:
-            if os.path.exists(cover_file):
+        # അതത് പ്രൊജക്റ്റിന്റെ കവർ ഫോട്ടോ അയക്കുന്നു
+        cover_file = proj.get('cover')
+        if cover_file and os.path.exists(cover_file):
+            try:
                 with open(cover_file, 'rb') as photo_file:
                     await context.bot.send_photo(
                         chat_id=chat_id,
                         photo=photo_file,
-                        caption=f"📦 **{product['title']}**\nClick below to pay with Telegram Stars and get instant access."
+                        caption=f"📦 **{proj['title']}**\nPreview Cover"
                     )
-        except Exception as e:
-            logging.error(f"Failed to send product cover: {e}")
+            except Exception as e:
+                logging.error(f"Failed to send cover image: {e}")
 
-        prices = [LabeledPrice(product['title'], product['price'])]
+        if proj["is_free"]:
+            free_text = (
+                "🎁 **Project 0: Free AI Prompts Samples**\n\n"
+                "**1. Product Description Prompt:**\n"
+                "`Act as an expert copywriter. Write a high-converting product description for [Product Name] focusing on benefits and emotional triggers.`\n\n"
+                "**2. Instagram/TikTok Ad Hook Prompt:**\n"
+                "`Generate 5 viral hook lines for a Shopify store selling [Product Niche] that stops users from scrolling instantly.`\n\n"
+                "💡 *Use these for your store! Check out Project 1, 2, and 3 below for full versions.* 🔥"
+            )
+            keyboard = [[InlineKeyboardButton("🔙 Back to Menu", callback_data="back_to_menu")]]
+            await query.message.reply_text(free_text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
         
-        await context.bot.send_invoice(
-            chat_id=chat_id,
-            title=product['title'],
-            description=product['description'],
-            payload=f"payload_{product_key}",
-            provider_token="",
-            currency="XTR",
-            prices=prices
-        )
+        else:
+            prices = [LabeledPrice(proj['title'], proj['price'])]
+            await context.bot.send_invoice(
+                chat_id=chat_id,
+                title=proj['title'],
+                description=proj['description'],
+                payload=f"payload_{proj_key}",
+                provider_token="",
+                currency="XTR",
+                prices=prices
+            )
+
+    elif data == "back_to_menu":
+        user_name = update.effective_user.first_name
+        welcome_text = f"👋 Welcome back {user_name}!\nChoose a project below (Project 0 to Project 3):"
+        keyboard = []
+        for key, proj in PROJECTS.items():
+            if proj["is_free"]:
+                btn_text = f"🎁 {proj['title']}"
+            else:
+                btn_text = f"⭐ {proj['title']} - {proj['price']} Stars"
+            keyboard.append([InlineKeyboardButton(btn_text, callback_data=f"select_{key}")])
+        
+        await query.message.reply_text(welcome_text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
 
 async def precheckout_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.pre_checkout_query
@@ -145,22 +155,22 @@ async def precheckout_callback(update: Update, context: ContextTypes.DEFAULT_TYP
 async def successful_payment_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.message.chat_id
     payload = update.message.successful_payment.invoice_payload
-    product_key = payload.replace("payload_", "")
-    product = PRODUCTS.get(product_key)
+    proj_key = payload.replace("payload_", "")
+    proj = PROJECTS.get(proj_key)
 
     await update.message.reply_text(
         "🎉 Payment Successful! Thank you for your purchase.\n\n"
-        "Here is your digital product file. Enjoy! 🚀",
+        "Here is your project file. Enjoy! 🚀",
         parse_mode="Markdown"
     )
     
-    if product and os.path.exists(product['file_path']):
+    if proj and 'file_path' in proj and os.path.exists(proj['file_path']):
         try:
-            with open(product['file_path'], 'rb') as file_obj:
+            with open(proj['file_path'], 'rb') as file_obj:
                 await context.bot.send_document(
                     chat_id=chat_id,
                     document=file_obj,
-                    caption=f"📄 {product['title']}"
+                    caption=f"📄 {proj['title']}"
                 )
         except Exception as e:
             logging.error(f"Failed to send file: {e}")
