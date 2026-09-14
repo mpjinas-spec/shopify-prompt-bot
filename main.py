@@ -13,7 +13,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 BOT_TOKEN = "8938226896:AAE6VV3zj01TBicAloOdifyjEl405M7kB-g"
 
-# ഗിറ്റ്‌ഹബ്ബിലെ കൃത്യമായ ഫയൽ നാമങ്ങൾ അനുസരിച്ചുള്ള പ്രൊഡക്റ്റ് ലിസ്റ്റ്
+# മുഴുവൻ പ്രൊഡക്റ്റുകളുടെയും വിവരങ്ങളും കവർ ഫയൽ നാമങ്ങളും
 PRODUCTS = {
     "project_0": {
         "title": "🎁 The Ultimate E-commerce ChatGPT Prompt Vault (Free Samples)",
@@ -27,7 +27,7 @@ PRODUCTS = {
         "description": "110+ high-converting prompts for Shopify store owners (PDF).",
         "price": 850,
         "is_free": False,
-        "file_path": "ecommerce-ai-prompt-vault.pdf",  # സ്ക്രീൻഷോട്ടിലെ കൃത്യമായ പേര്
+        "file_path": "ecommerce-ai-prompt-vault.pdf",
         "cover": "Ecommerce AI Prompt Vault.jpg"
     },
     "notion_system": {
@@ -35,7 +35,7 @@ PRODUCTS = {
         "description": "Centralized Notion workspace templates and operational dashboards.",
         "price": 600,
         "is_free": False,
-        "file_path": "notion-links.txt",  # സ്ക്രീൻഷോട്ടിലെ കൃത്യമായ പേര്
+        "file_path": "notion-links.txt",
         "cover": "Notion System.jpg"
     },
     "shopify_playbook": {
@@ -43,7 +43,7 @@ PRODUCTS = {
         "description": "Complete 5-Module E-Commerce Growth System.",
         "price": 1000,
         "is_free": False,
-        "file_path": "THE SHOPIFY SCALE PLAYBOOK.pdf",  # സ്ക്രീൻഷോട്ടിലെ കൃത്യമായ പേര്
+        "file_path": "THE SHOPIFY SCALE PLAYBOOK.pdf",
         "cover": "Shopify Scale Playbook.jpg"
     }
 }
@@ -130,6 +130,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not prod:
             return
 
+        # 1. ആദ്യം കവർ ഫോട്ടോ കൃത്യമായി സെൻഡ് ചെയ്യും
         cover_file = prod.get('cover')
         if cover_file and os.path.exists(cover_file):
             try:
@@ -137,13 +138,12 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     await context.bot.send_photo(
                         chat_id=chat_id,
                         photo=photo_file,
-                        caption=f"📦 **{prod['title']}**\nPreview Cover"
+                        caption=f"📦 **{prod['title']}**\n\n{prod['description']}"
                     )
             except Exception as e:
                 logging.error(f"Failed to send cover image {cover_file}: {e}")
-        else:
-            logging.warning(f"Cover image not found on server: {cover_file}")
 
+        # 2. അതിനുശേഷം ടെലഗ്രാം ഇൻവോയ്സ് (പെയ്‌മെന്റ്) അയക്കും
         prices = [LabeledPrice(prod['title'], prod['price'])]
         await context.bot.send_invoice(
             chat_id=chat_id,
