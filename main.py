@@ -14,6 +14,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 BOT_TOKEN = "8938226896:AAE6VV3zj01TBicAloOdifyjEl405M7kB-g"
 PRICE_STARS = 850
 PDF_FILENAME = "The Ultimate E-commerce ChatGPT Prompt Vault for Shopify Owners.pdf"
+COVER_IMAGE = "cover.jpg" # GitHub-ൽ നൽകിയ ഫോട്ടോയുടെ പേര് ഇവിടെ കൃത്യമായി കൊടുത്തിട്ടുണ്ട്
 
 # Simple Flask app for UptimeRobot to ping
 app = Flask('')
@@ -50,6 +51,18 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     
     if query.data == "free_prompts":
+        # കവർ ഫോട്ടോ അയക്കുന്നു
+        try:
+            with open(COVER_IMAGE, 'rb') as photo_file:
+                await context.bot.send_photo(
+                    chat_id=query.message.chat_id,
+                    photo=photo_file,
+                    caption="📄 **The Ultimate E-commerce ChatGPT Prompt Vault**\n(Preview of what you get inside)"
+                )
+        except Exception as e:
+            logging.error(f"Failed to send cover image: {e}")
+
+        # ഫ്രീ പ്രോംപ്റ്റുകൾ അയക്കുന്നു
         free_text = (
             "🎁 **Here are 2 Free High-Converting Shopify AI Prompts:**\n\n"
             "**1. Product Description Prompt:**\n"
