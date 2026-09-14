@@ -13,38 +13,34 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 BOT_TOKEN = "8938226896:AAE6VV3zj01TBicAloOdifyjEl405M7kB-g"
 
-# മുഴുവൻ പ്രൊഡക്റ്റുകളുടെയും വിവരങ്ങളും കവർ ഫയൽ നാമങ്ങളും
+# മുഴുവൻ പ്രൊഡക്റ്റുകളുടെയും വിവരങ്ങൾ
 PRODUCTS = {
     "project_0": {
         "title": "🎁 The Ultimate E-commerce ChatGPT Prompt Vault (Free Samples)",
         "description": "110+ proven prompts for Shopify store owners (Free Samples).",
         "price": 0,
-        "is_free": True,
-        "cover": "cover.jpg"
+        "is_free": True
     },
     "ai_prompt_vault": {
         "title": "🔥 Ecommerce AI Prompt Vault",
         "description": "110+ high-converting prompts for Shopify store owners (PDF).",
         "price": 850,
         "is_free": False,
-        "file_path": "ecommerce-ai-prompt-vault.pdf",
-        "cover": "Ecommerce AI Prompt Vault.jpg"
+        "file_path": "ecommerce-ai-prompt-vault.pdf"
     },
     "notion_system": {
         "title": "📊 Notion Business System",
         "description": "Centralized Notion workspace templates and operational dashboards.",
         "price": 600,
         "is_free": False,
-        "file_path": "notion-links.txt",
-        "cover": "Notion System.jpg"
+        "file_path": "notion-links.txt"
     },
     "shopify_playbook": {
         "title": "🚀 Shopify Scale Playbook",
         "description": "Complete 5-Module E-Commerce Growth System.",
         "price": 1000,
         "is_free": False,
-        "file_path": "THE SHOPIFY SCALE PLAYBOOK.pdf",
-        "cover": "Shopify Scale Playbook.jpg"
+        "file_path": "THE SHOPIFY SCALE PLAYBOOK.pdf"
     }
 }
 
@@ -62,7 +58,7 @@ def keep_alive():
     t = Thread(target=run_flask)
     t.start()
 
-# മെയിൻ മെനു കീബോർഡ് (5 ഓപ്ഷനുകൾ)
+# മെയിൻ മെനു കീബോർഡ്
 def get_main_menu_keyboard():
     keyboard = [
         [InlineKeyboardButton("🎁 Free AI Prompts", callback_data="select_free_entry")],
@@ -90,18 +86,6 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = query.message.chat_id
 
     if data == "select_free_entry" or data == "select_project_0":
-        cover_file = PRODUCTS["project_0"]["cover"]
-        if os.path.exists(cover_file):
-            try:
-                with open(cover_file, 'rb') as photo_file:
-                    await context.bot.send_photo(
-                        chat_id=chat_id,
-                        photo=photo_file,
-                        caption="📦 **The Ultimate E-commerce ChatGPT Prompt Vault (Free Samples)**"
-                    )
-            except Exception as e:
-                logging.error(f"Failed to send cover image: {e}")
-
         free_text = (
             "🎁 **Free AI Prompts Samples**\n"
             "*(From The Ultimate E-commerce ChatGPT Prompt Vault for Shopify Owners)*\n\n"
@@ -114,36 +98,22 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         free_keyboard = [
             [InlineKeyboardButton(f"⭐ Unlock Full Prompt Vault - {PRODUCTS['ai_prompt_vault']['price']} Stars", callback_data="select_ai_prompt_vault")],
-            [InlineKeyboardButton("🎁 Free AI Prompts", callback_data="select_free_entry")],
-            [InlineKeyboardButton("🎁 The Ultimate E-commerce ChatGPT Prompt Vault", callback_data="select_project_0")],
-            [InlineKeyboardButton(f"⭐ {PRODUCTS['ai_prompt_vault']['title']} - {PRODUCTS['ai_prompt_vault']['price']} Stars", callback_data="select_ai_prompt_vault")],
-            [InlineKeyboardButton(f"⭐ {PRODUCTS['notion_system']['title']} - {PRODUCTS['notion_system']['price']} Stars", callback_data="select_notion_system")],
-            [InlineKeyboardButton(f"⭐ {PRODUCTS['shopify_playbook']['title']} - {PRODUCTS['shopify_playbook']['price']} Stars", callback_data="select_shopify_playbook")]
+            [InlineKeyboardButton("🔙 Back to Main Menu", callback_data="select_menu")]
         ]
         
         await query.message.reply_text(free_text, reply_markup=InlineKeyboardMarkup(free_keyboard), parse_mode="Markdown")
 
-    elif data.startswith("select_") and data != "select_free_entry":
+    elif data == "select_menu":
+        await query.message.reply_text("Please choose an option from the menu below:", reply_markup=get_main_menu_keyboard())
+
+    elif data.startswith("select_"):
         prod_key = data.replace("select_", "")
         prod = PRODUCTS.get(prod_key)
         
         if not prod:
             return
 
-        # 1. ആദ്യം കവർ ഫോട്ടോ കൃത്യമായി സെൻഡ് ചെയ്യും
-        cover_file = prod.get('cover')
-        if cover_file and os.path.exists(cover_file):
-            try:
-                with open(cover_file, 'rb') as photo_file:
-                    await context.bot.send_photo(
-                        chat_id=chat_id,
-                        photo=photo_file,
-                        caption=f"📦 **{prod['title']}**\n\n{prod['description']}"
-                    )
-            except Exception as e:
-                logging.error(f"Failed to send cover image {cover_file}: {e}")
-
-        # 2. അതിനുശേഷം ടെലഗ്രാം ഇൻവോയ്സ് (പെയ്‌മെന്റ്) അയക്കും
+        # ടെലഗ്രാം ഇൻവോയ്സ് നേരിട്ട് സെൻഡ് ചെയ്യുന്നു (ഏറ്റവും ഫാസ്റ്റ് ആയ രീതി)
         prices = [LabeledPrice(prod['title'], prod['price'])]
         await context.bot.send_invoice(
             chat_id=chat_id,
