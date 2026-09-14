@@ -13,7 +13,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 BOT_TOKEN = "8938226896:AAE6VV3zj01TBicAloOdifyjEl405M7kB-g"
 
-# മൂന്ന് പ്രൊഡക്റ്റുകളുടെയും കൃത്യമായ വിവരങ്ങളും ഫയലുകളും
+# മുഴുവൻ പ്രൊഡക്റ്റുകളുടെയും വിവരങ്ങൾ (ഫ്രീ പ്രൊജക്റ്റും പെയ്ഡ് പ്രൊഡക്റ്റുകളും)
 PRODUCTS = {
     "ai_prompt_vault": {
         "title": "🔥 The Ultimate E-commerce ChatGPT Prompt Vault",
@@ -57,16 +57,17 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     welcome_text = (
         f"👋 Hello {user_name}!\n\n"
         "Welcome to **Qyro Scale Hub** 🚀\n"
-        "Please choose a digital product or free option below:"
+        "Choose a digital product or get your free AI prompts below:"
     )
     
     keyboard = []
-    # മൂന്ന് പ്രൊഡക്റ്റുകൾക്കുള്ള ബട്ടണുകൾ
+    
+    # 1. ആദ്യം തന്നെ ഫ്രീ പ്രൊംപ്റ്റ് ഓപ്ഷൻ മുകളിൽ കൊടുക്കുന്നു (Project 0)
+    keyboard.append([InlineKeyboardButton("🎁 Get Free AI Prompts (2 Free Samples)", callback_data="free_prompts")])
+    
+    # 2. ബാക്കി മൂന്ന് പെയ്ഡ് പ്രൊഡക്റ്റുകൾ താഴെ കൊടുക്കുന്നു
     for key, product in PRODUCTS.items():
         keyboard.append([InlineKeyboardButton(f"⭐ {product['title']} - {product['price']} Stars", callback_data=f"buy_{key}")])
-    
-    # ഫ്രീ പ്രൊംപ്റ്റിനുള്ള ബട്ടൺ താഴെ ചേർക്കുന്നു
-    keyboard.append([InlineKeyboardButton("🎁 Get Free AI Prompts (Sample)", callback_data="free_prompts")])
     
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text(welcome_text, reply_markup=reply_markup, parse_mode="Markdown")
@@ -76,13 +77,16 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     
     if query.data == "free_prompts":
+        # ഫ്രീ പ്രൊംപ്റ്റിന് ആദ്യത്തെ പ്രൊഡക്റ്റിന്റെ കവർ ഇമേജ് അയക്കുന്നു
+        cover_file = PRODUCTS["ai_prompt_vault"]["cover"]
         try:
-            with open(PRODUCTS["ai_prompt_vault"]["cover"], 'rb') as photo_file:
-                await context.bot.send_photo(
-                    chat_id=query.message.chat_id,
-                    photo=photo_file,
-                    caption="📄 **The Ultimate E-commerce ChatGPT Prompt Vault**\n(Preview of what you get inside)"
-                )
+            if os.path.exists(cover_file):
+                with open(cover_file, 'rb') as photo_file:
+                    await context.bot.send_photo(
+                        chat_id=query.message.chat_id,
+                        photo=photo_file,
+                        caption="📄 **The Ultimate E-commerce ChatGPT Prompt Vault**\n(Preview Cover)"
+                    )
         except Exception as e:
             logging.error(f"Failed to send cover image: {e}")
 
@@ -92,9 +96,10 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "`Act as an expert copywriter. Write a high-converting product description for [Product Name] focusing on benefits, emotional triggers, and bullet points.`\n\n"
             "**2. Instagram/TikTok Ad Hook Prompt:**\n"
             "`Generate 5 viral hook lines for a Shopify store selling [Product Niche] that stops users from scrolling instantly.`\n\n"
-            "💡 *Try these out and see how much time they save you!* 🔥"
+            "💡 *Try these out and see how much time they save you!* 🔥\n\n"
+            "To unlock the full 110+ prompts, get the complete vault below 👇"
         )
-        keyboard = [[InlineKeyboardButton("⭐ Unlock Full Prompt Vault (850 Stars)", callback_data="buy_ai_prompt_vault")]]
+        keyboard = [[InlineKeyboardButton("⭐ Buy Full Vault for 850 Stars", callback_data="buy_ai_prompt_vault")]]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.reply_text(free_text, reply_markup=reply_markup, parse_mode="Markdown")
 
@@ -106,6 +111,20 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
         chat_id = query.message.chat_id
+        
+        # വാങ്ങുന്ന പ്രൊഡക്റ്റിന്റെ കവർ ചിത്രം ആദ്യം സെൻഡ് ചെയ്യുന്നു
+        cover_file = product['cover']
+        try:
+            if os.path.exists(cover_file):
+                with open(cover_file, 'rb') as photo_file:
+                    await context.bot.send_photo(
+                        chat_id=chat_id,
+                        photo=photo_file,
+                        caption=f"📦 **{product['title']}**\nClick below to pay with Telegram Stars and get instant access."
+                    )
+        except Exception as e:
+            logging.error(f"Failed to send product cover: {e}")
+
         prices = [LabeledPrice(product['title'], product['price'])]
         
         await context.bot.send_invoice(
