@@ -30,13 +30,19 @@ def keep_alive():
     t.start()
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_name = update.effective_user.first_name
     welcome_text = (
-        "Welcome to Ecom AI Growth! 🚀\n\n"
+        f"👋 Hello {user_name}!\n\n"
+        "Welcome to **Qyro Scale Hub** 🚀\n"
         "Get *The Ultimate E-commerce ChatGPT Prompt Vault* built specifically for Shopify store owners. "
         "110+ battle-tested prompts to scale your store and save hundreds of hours.\n\n"
-        "Click the button below to purchase instantly using Telegram Stars."
+        "👇 Choose an option below to get started:"
     )
-    keyboard = [[InlineKeyboardButton("Buy Now for 850 ⭐ ($17)", callback_data="buy_prompt")]]
+    # ബട്ടണുകൾ അപ്ഡേറ്റ് ചെയ്തു (ഫ്രീ പ്രോംപ്റ്റ് ബട്ടണും പെയ്ഡ് ബട്ടണും ഉൾപ്പെടുത്തി)
+    keyboard = [
+        [InlineKeyboardButton("🎁 Get Free AI Prompts", callback_data="free_prompts")],
+        [InlineKeyboardButton("⭐ Buy Full Vault for 850 ⭐ ($17)", callback_data="buy_prompt")]
+    ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text(welcome_text, reply_markup=reply_markup, parse_mode="Markdown")
 
@@ -44,7 +50,21 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     
-    if query.data == "buy_prompt":
+    if query.data == "free_prompts":
+        # യൂസർ ഫ്രീ പ്രോംപ്റ്റ് ചോദിക്കുമ്പോൾ കൊടുക്കുന്ന സൗജന്യ വാല്യൂ
+        free_text = (
+            "🎁 **Here are 2 Free Shopify AI Prompts to start with:**\n\n"
+            "**1. High-Converting Product Description Prompt:**\n"
+            "`Act as an expert copywriter. Write a high-converting product description for [Product Name] focusing on benefits, emotional triggers, and bullet points for features.`\n\n"
+            "**2. Facebook Ad Hook Prompt:**\n"
+            "`Generate 5 viral hook lines for a Shopify store selling [Product Niche] that stops users from scrolling on Instagram.`\n\n"
+            "⭐ Want all 110+ battle-tested prompts? Click below to unlock the full Pro Vault!",
+        )
+        keyboard = [[InlineKeyboardButton("⭐ Unlock Full Pro Vault (850 Stars)", callback_data="buy_prompt")]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.message.reply_text(free_text, reply_markup=reply_markup, parse_mode="Markdown")
+
+    elif query.data == "buy_prompt":
         chat_id = query.message.chat_id
         title = "Shopify ChatGPT Prompt Vault"
         description = "Instant download: 110+ high-converting prompts for Shopify store owners (PDF)."
