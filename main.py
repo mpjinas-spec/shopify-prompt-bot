@@ -38,7 +38,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "110+ battle-tested prompts to scale your store and save hundreds of hours.\n\n"
         "👇 Choose an option below to get started:"
     )
-    # ബട്ടണുകൾ അപ്ഡേറ്റ് ചെയ്തു (ഫ്രീ പ്രോംപ്റ്റ് ബട്ടണും പെയ്ഡ് ബട്ടണും ഉൾപ്പെടുത്തി)
     keyboard = [
         [InlineKeyboardButton("🎁 Get Free AI Prompts", callback_data="free_prompts")],
         [InlineKeyboardButton("⭐ Buy Full Vault for 850 ⭐ ($17)", callback_data="buy_prompt")]
@@ -51,14 +50,14 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     
     if query.data == "free_prompts":
-        # യൂസർ ഫ്രീ പ്രോംപ്റ്റ് ചോദിക്കുമ്പോൾ കൊടുക്കുന്ന സൗജന്യ വാല്യൂ
         free_text = (
-            "🎁 **Here are 2 Free Shopify AI Prompts to start with:**\n\n"
-            "**1. High-Converting Product Description Prompt:**\n"
-            "`Act as an expert copywriter. Write a high-converting product description for [Product Name] focusing on benefits, emotional triggers, and bullet points for features.`\n\n"
-            "**2. Facebook Ad Hook Prompt:**\n"
-            "`Generate 5 viral hook lines for a Shopify store selling [Product Niche] that stops users from scrolling on Instagram.`\n\n"
-            "⭐ Want all 110+ battle-tested prompts? Click below to unlock the full Pro Vault!",
+            "🎁 **Here are 2 Free High-Converting Shopify AI Prompts:**\n\n"
+            "**1. Product Description Prompt:**\n"
+            "`Act as an expert copywriter. Write a high-converting product description for [Product Name] focusing on benefits, emotional triggers, and bullet points.`\n\n"
+            "**2. Instagram/TikTok Ad Hook Prompt:**\n"
+            "`Generate 5 viral hook lines for a Shopify store selling [Product Niche] that stops users from scrolling instantly.`\n\n"
+            "💡 *ഈ പ്രോംപ്റ്റുകൾ ഉപയോഗിച്ചു നോക്കൂ, ഇതിന്റെ റിസൾട്ട് നിങ്ങൾക്ക് കാണുമ്പോൾ മനസ്സിലാകും ഇത് നിങ്ങളുടെ ബിസിനസിന് എത്രത്തോളം സമയം ലാഭിച്ചു തരുമെന്ന്!* 🔥\n\n"
+            "എന്നാൽ ഇതൊരു ചെറിയ തുടക്കം മാത്രമാണ്. നിങ്ങളുടെ സ്റ്റോറിന്റെ സെയിൽസ് ഇരട്ടിയാക്കാൻ ഇതുപോലെയുള്ള **110+ പ്രീമിയം പ്രോംപ്റ്റുകളും സിസ്റ്റങ്ങളും** ഫുൾ വോൾട്ടിൽ ലഭ്യമാണ്. താഴെയുള്ള ബട്ടൺ വഴി ഇത് അൺലോക്ക് ചെയ്യാം 👇"
         )
         keyboard = [[InlineKeyboardButton("⭐ Unlock Full Pro Vault (850 Stars)", callback_data="buy_prompt")]]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -95,7 +94,6 @@ async def successful_payment_callback(update: Update, context: ContextTypes.DEFA
         parse_mode="Markdown"
     )
     
-    # Send the PDF file automatically
     try:
         with open(PDF_FILENAME, 'rb') as pdf_file:
             await context.bot.send_document(
