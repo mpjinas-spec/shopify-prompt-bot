@@ -14,7 +14,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 BOT_TOKEN = "8938226896:AAE6VV3zj01TBicAloOdifyjEl405M7kB-g"
 PRICE_STARS = 850
 PDF_FILENAME = "The Ultimate E-commerce ChatGPT Prompt Vault for Shopify Owners.pdf"
-COVER_IMAGE = "cover.jpg" # GitHub-ൽ നൽകിയ ഫോട്ടോയുടെ പേര് ഇവിടെ കൃത്യമായി കൊടുത്തിട്ടുണ്ട്
+COVER_IMAGE = "cover.jpg"
 
 # Simple Flask app for UptimeRobot to ping
 app = Flask('')
@@ -51,7 +51,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     
     if query.data == "free_prompts":
-        # കവർ ഫോട്ടോ അയക്കുന്നു
+        # Send cover image
         try:
             with open(COVER_IMAGE, 'rb') as photo_file:
                 await context.bot.send_photo(
@@ -62,15 +62,15 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except Exception as e:
             logging.error(f"Failed to send cover image: {e}")
 
-        # ഫ്രീ പ്രോംപ്റ്റുകൾ അയക്കുന്നു
+        # Send free prompts in professional English
         free_text = (
             "🎁 **Here are 2 Free High-Converting Shopify AI Prompts:**\n\n"
             "**1. Product Description Prompt:**\n"
             "`Act as an expert copywriter. Write a high-converting product description for [Product Name] focusing on benefits, emotional triggers, and bullet points.`\n\n"
             "**2. Instagram/TikTok Ad Hook Prompt:**\n"
             "`Generate 5 viral hook lines for a Shopify store selling [Product Niche] that stops users from scrolling instantly.`\n\n"
-            "💡 *ഈ പ്രോംപ്റ്റുകൾ ഉപയോഗിച്ചു നോക്കൂ, ഇതിന്റെ റിസൾട്ട് നിങ്ങൾക്ക് കാണുമ്പോൾ മനസ്സിലാകും ഇത് നിങ്ങളുടെ ബിസിനസിന് എത്രത്തോളം സമയം ലാഭിച്ചു തരുമെന്ന്!* 🔥\n\n"
-            "എന്നാൽ ഇതൊരു ചെറിയ തുടക്കം മാത്രമാണ്. നിങ്ങളുടെ സ്റ്റോറിന്റെ സെയിൽസ് ഇരട്ടിയാക്കാൻ ഇതുപോലെയുള്ള **110+ പ്രീമിയം പ്രോംപ്റ്റുകളും സിസ്റ്റങ്ങളും** ഫുൾ വോൾട്ടിൽ ലഭ്യമാണ്. താഴെയുള്ള ബട്ടൺ വഴി ഇത് അൺലോക്ക് ചെയ്യാം 👇"
+            "💡 *Try these prompts out and see how much time they save you!* 🔥\n\n"
+            "However, this is just the beginning. To truly double your store sales and scale faster, unlock the **110+ Premium Prompts & Systems** in the Full Pro Vault below 👇"
         )
         keyboard = [[InlineKeyboardButton("⭐ Unlock Full Pro Vault (850 Stars)", callback_data="buy_prompt")]]
         reply_markup = InlineKeyboardMarkup(keyboard)
