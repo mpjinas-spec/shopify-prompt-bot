@@ -13,18 +13,19 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 BOT_TOKEN = "8938226896:AAE6VV3zj01TBicAloOdifyjEl405M7kB-g"
 
-# മുഴുവൻ പ്രൊഡക്റ്റുകളുടെയും വിവരങ്ങൾ
+# കൃത്യമായ വിലകളും വ്യത്യസ്തമായ ഡിസ്ക്രിപ്ഷനുകളും അടങ്ങിയ പ്രൊഡക്റ്റ് ലിസ്റ്റ്
 PRODUCTS = {
     "project_0": {
-        "title": "🎁 The Ultimate E-commerce ChatGPT Prompt Vault (Free Samples)",
-        "description": "110+ proven prompts for Shopify store owners (Free Samples).",
-        "price": 0,
-        "is_free": True
+        "title": "🔥 The Ultimate E-commerce ChatGPT Prompt Vault",
+        "description": "110+ proven prompts for Shopify store owners to scale your store and boost sales instantly! (Full Version).",
+        "price": 850,  # നിങ്ങൾ ആവശ്യപ്പെട്ടതുപോലെ 850 Stars
+        "is_free": False,
+        "file_path": "ecommerce-ai-prompt-vault.pdf"
     },
-    "ai_prompt_vault": {
-        "title": "🔥 Ecommerce AI Prompt Vault",
-        "description": "110+ high-converting prompts for Shopify store owners (PDF).",
-        "price": 850,
+    "project_1": {
+        "title": "💡 Advanced E-commerce Growth Prompts (Project 1)",
+        "description": "Advanced AI copywriting & marketing strategies designed specifically for high-growth online stores.",
+        "price": 500,  # പുതിയതും മികച്ചതുമായ സ്റ്റാർ വാല്യൂ
         "is_free": False,
         "file_path": "ecommerce-ai-prompt-vault.pdf"
     },
@@ -58,12 +59,12 @@ def keep_alive():
     t = Thread(target=run_flask)
     t.start()
 
-# മെയിൻ മെനു കീബോർഡ്
+# 5 ഓപ്ഷനുകൾ അടങ്ങിയ മെയിൻ മെനു കീബോർഡ്
 def get_main_menu_keyboard():
     keyboard = [
-        [InlineKeyboardButton("🎁 Free AI Prompts", callback_data="select_free_entry")],
-        [InlineKeyboardButton("🎁 The Ultimate E-commerce ChatGPT Prompt Vault", callback_data="select_project_0")],
-        [InlineKeyboardButton(f"⭐ {PRODUCTS['ai_prompt_vault']['title']} - {PRODUCTS['ai_prompt_vault']['price']} Stars", callback_data="select_ai_prompt_vault")],
+        [InlineKeyboardButton("🎁 Free AI Prompts Samples", callback_data="select_free_entry")],
+        [InlineKeyboardButton(f"⭐ {PRODUCTS['project_0']['title']} - {PRODUCTS['project_0']['price']} Stars", callback_data="select_project_0")],
+        [InlineKeyboardButton(f"⭐ {PRODUCTS['project_1']['title']} - {PRODUCTS['project_1']['price']} Stars", callback_data="select_project_1")],
         [InlineKeyboardButton(f"⭐ {PRODUCTS['notion_system']['title']} - {PRODUCTS['notion_system']['price']} Stars", callback_data="select_notion_system")],
         [InlineKeyboardButton(f"⭐ {PRODUCTS['shopify_playbook']['title']} - {PRODUCTS['shopify_playbook']['price']} Stars", callback_data="select_shopify_playbook")]
     ]
@@ -85,7 +86,8 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = query.data
     chat_id = query.message.chat_id
 
-    if data == "select_free_entry" or data == "select_project_0":
+    # ഫ്രീ സാമ്പിൾ എൻട്രി ക്ലിക്ക് ചെയ്യുമ്പോൾ
+    if data == "select_free_entry":
         free_text = (
             "🎁 **Free AI Prompts Samples**\n"
             "*(From The Ultimate E-commerce ChatGPT Prompt Vault for Shopify Owners)*\n\n"
@@ -93,18 +95,19 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "`Act as an expert copywriter. Write a high-converting product description for [Product Name] focusing on benefits and emotional triggers.`\n\n"
             "**2. Instagram/TikTok Ad Hook Prompt:**\n"
             "`Generate 5 viral hook lines for a Shopify store selling [Product Niche] that stops users from scrolling instantly.`\n\n"
-            "💡 *Want to unlock all 110+ proven prompts? Get the full vault below!* 🔥"
+            "💡 *Want to unlock the full vaults? Choose your package from the menu below!* 🔥"
         )
         
+        # ഫ്രീ മെനുവിനുള്ളിലും അതേ 5 ഓപ്ഷനുകൾ കൃത്യമായി വരുന്നു
         free_keyboard = [
-            [InlineKeyboardButton(f"⭐ Unlock Full Prompt Vault - {PRODUCTS['ai_prompt_vault']['price']} Stars", callback_data="select_ai_prompt_vault")],
-            [InlineKeyboardButton("🔙 Back to Main Menu", callback_data="select_menu")]
+            [InlineKeyboardButton("🎁 Free AI Prompts Samples", callback_data="select_free_entry")],
+            [InlineKeyboardButton(f"⭐ {PRODUCTS['project_0']['title']} - {PRODUCTS['project_0']['price']} Stars", callback_data="select_project_0")],
+            [InlineKeyboardButton(f"⭐ {PRODUCTS['project_1']['title']} - {PRODUCTS['project_1']['price']} Stars", callback_data="select_project_1")],
+            [InlineKeyboardButton(f"⭐ {PRODUCTS['notion_system']['title']} - {PRODUCTS['notion_system']['price']} Stars", callback_data="select_notion_system")],
+            [InlineKeyboardButton(f"⭐ {PRODUCTS['shopify_playbook']['title']} - {PRODUCTS['shopify_playbook']['price']} Stars", callback_data="select_shopify_playbook")]
         ]
         
         await query.message.reply_text(free_text, reply_markup=InlineKeyboardMarkup(free_keyboard), parse_mode="Markdown")
-
-    elif data == "select_menu":
-        await query.message.reply_text("Please choose an option from the menu below:", reply_markup=get_main_menu_keyboard())
 
     elif data.startswith("select_"):
         prod_key = data.replace("select_", "")
@@ -113,7 +116,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not prod:
             return
 
-        # ടെലഗ്രാം ഇൻവോയ്സ് നേരിട്ട് സെൻഡ് ചെയ്യുന്നു (ഏറ്റവും ഫാസ്റ്റ് ആയ രീതി)
+        # പെയ്ഡ് പ്രൊഡക്റ്റുകൾക്ക് അതത് വിലയും വെവ്വേറെ ഡിസ്ക്രിപ്ഷനും വെച്ച് ഇൻവോയ്സ് അയക്കുന്നു
         prices = [LabeledPrice(prod['title'], prod['price'])]
         await context.bot.send_invoice(
             chat_id=chat_id,
