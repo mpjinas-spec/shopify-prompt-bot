@@ -13,35 +13,39 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 BOT_TOKEN = "8938226896:AAE6VV3zj01TBicAloOdifyjEl405M7kB-g"
 
-# കൃത്യമായ വിലകളും വ്യത്യസ്തമായ ഡിസ്ക്രിപ്ഷനുകളും അടങ്ങിയ പ്രൊഡക്റ്റ് ലിസ്റ്റ്
+# 5 ഓപ്ഷനുകൾക്കുമുള്ള കൃത്യമായ ടൈറ്റിൽ, ഡിസ്ക്രിപ്ഷൻ, വില, കവർ ഫോട്ടോ എന്നിവ
 PRODUCTS = {
     "project_0": {
         "title": "🔥 The Ultimate E-commerce ChatGPT Prompt Vault",
         "description": "110+ proven prompts for Shopify store owners to scale your store and boost sales instantly! (Full Version).",
-        "price": 850,  # നിങ്ങൾ ആവശ്യപ്പെട്ടതുപോലെ 850 Stars
+        "price": 850,
         "is_free": False,
-        "file_path": "ecommerce-ai-prompt-vault.pdf"
+        "file_path": "ecommerce-ai-prompt-vault.pdf",
+        "cover": "cover.jpg"
     },
     "project_1": {
         "title": "💡 Advanced E-commerce Growth Prompts (Project 1)",
         "description": "Advanced AI copywriting & marketing strategies designed specifically for high-growth online stores.",
-        "price": 500,  # പുതിയതും മികച്ചതുമായ സ്റ്റാർ വാല്യൂ
+        "price": 500,
         "is_free": False,
-        "file_path": "ecommerce-ai-prompt-vault.pdf"
+        "file_path": "ecommerce-ai-prompt-vault.pdf",
+        "cover": "Ecommerce AI Prompt Vault.jpg"
     },
     "notion_system": {
         "title": "📊 Notion Business System",
         "description": "Centralized Notion workspace templates and operational dashboards.",
         "price": 600,
         "is_free": False,
-        "file_path": "notion-links.txt"
+        "file_path": "notion-links.txt",
+        "cover": "Notion System.jpg"
     },
     "shopify_playbook": {
         "title": "🚀 Shopify Scale Playbook",
         "description": "Complete 5-Module E-Commerce Growth System.",
         "price": 1000,
         "is_free": False,
-        "file_path": "THE SHOPIFY SCALE PLAYBOOK.pdf"
+        "file_path": "THE SHOPIFY SCALE PLAYBOOK.pdf",
+        "cover": "Shopify Scale Playbook.jpg"
     }
 }
 
@@ -59,7 +63,7 @@ def keep_alive():
     t = Thread(target=run_flask)
     t.start()
 
-# 5 ഓപ്ഷനുകൾ അടങ്ങിയ മെയിൻ മെനു കീബോർഡ്
+# 5 കൃത്യമായ ഓപ്ഷനുകൾ അടങ്ങിയ മെയിൻ മെനു കീബോർഡ്
 def get_main_menu_keyboard():
     keyboard = [
         [InlineKeyboardButton("🎁 Free AI Prompts Samples", callback_data="select_free_entry")],
@@ -88,6 +92,19 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # ഫ്രീ സാമ്പിൾ എൻട്രി ക്ലിക്ക് ചെയ്യുമ്പോൾ
     if data == "select_free_entry":
+        # ആദ്യം കവർ ഫോട്ടോ അയക്കുന്നു (ഉണ്ടെങ്കിൽ)
+        cover_file = PRODUCTS["project_0"].get("cover")
+        if cover_file and os.path.exists(cover_file):
+            try:
+                with open(cover_file, 'rb') as photo_file:
+                    await context.bot.send_photo(
+                        chat_id=chat_id,
+                        photo=photo_file,
+                        caption="📦 **Free AI Prompts Preview & Samples**"
+                    )
+            except Exception as e:
+                logging.error(f"Failed to send cover image: {e}")
+
         free_text = (
             "🎁 **Free AI Prompts Samples**\n"
             "*(From The Ultimate E-commerce ChatGPT Prompt Vault for Shopify Owners)*\n\n"
@@ -98,16 +115,8 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "💡 *Want to unlock the full vaults? Choose your package from the menu below!* 🔥"
         )
         
-        # ഫ്രീ മെനുവിനുള്ളിലും അതേ 5 ഓപ്ഷനുകൾ കൃത്യമായി വരുന്നു
-        free_keyboard = [
-            [InlineKeyboardButton("🎁 Free AI Prompts Samples", callback_data="select_free_entry")],
-            [InlineKeyboardButton(f"⭐ {PRODUCTS['project_0']['title']} - {PRODUCTS['project_0']['price']} Stars", callback_data="select_project_0")],
-            [InlineKeyboardButton(f"⭐ {PRODUCTS['project_1']['title']} - {PRODUCTS['project_1']['price']} Stars", callback_data="select_project_1")],
-            [InlineKeyboardButton(f"⭐ {PRODUCTS['notion_system']['title']} - {PRODUCTS['notion_system']['price']} Stars", callback_data="select_notion_system")],
-            [InlineKeyboardButton(f"⭐ {PRODUCTS['shopify_playbook']['title']} - {PRODUCTS['shopify_playbook']['price']} Stars", callback_data="select_shopify_playbook")]
-        ]
-        
-        await query.message.reply_text(free_text, reply_markup=InlineKeyboardMarkup(free_keyboard), parse_mode="Markdown")
+        # ഫ്രീ മെനുവിനുള്ളിൽ 5 ഓപ്ഷനുകൾ കൃത്യമായി വരുന്നു
+        await query.message.reply_text(free_text, reply_markup=get_main_menu_keyboard(), parse_mode="Markdown")
 
     elif data.startswith("select_"):
         prod_key = data.replace("select_", "")
@@ -116,7 +125,20 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not prod:
             return
 
-        # പെയ്ഡ് പ്രൊഡക്റ്റുകൾക്ക് അതത് വിലയും വെവ്വേറെ ഡിസ്ക്രിപ്ഷനും വെച്ച് ഇൻവോയ്സ് അയക്കുന്നു
+        # പെയ്ഡ് പ്രൊഡക്റ്റിന്റെ കവർ ഫോട്ടോ ഉണ്ടെങ്കിൽ ആദ്യം അയക്കും
+        cover_file = prod.get('cover')
+        if cover_file and os.path.exists(cover_file):
+            try:
+                with open(cover_file, 'rb') as photo_file:
+                    await context.bot.send_photo(
+                        chat_id=chat_id,
+                        photo=photo_file,
+                        caption=f"📦 **{prod['title']}**\n\n{prod['description']}"
+                    )
+            except Exception as e:
+                logging.error(f"Failed to send cover image {cover_file}: {e}")
+
+        # അതിനുശേഷം ഇൻവോയ്സ് അയക്കും
         prices = [LabeledPrice(prod['title'], prod['price'])]
         await context.bot.send_invoice(
             chat_id=chat_id,
